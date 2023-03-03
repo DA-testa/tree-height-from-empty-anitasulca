@@ -3,7 +3,6 @@
 import sys
 import threading
 
-
 def compute_height(n, parents):
     # Build tree data structure
     tree = [[] for _ in range(n)]
@@ -24,7 +23,6 @@ def compute_height(n, parents):
 
     return traverse(root)
 
-
 def main():
     # Read input
     n = int(input())
@@ -36,13 +34,13 @@ def main():
     # Output result
     print(height)
 
-
 # Increase recursion limit and stack size
 sys.setrecursionlimit(10**7)
 threading.stack_size(2**27)
 
 # Start main function in a new thread
 threading.Thread(target=main).start()
+
 
 
 
