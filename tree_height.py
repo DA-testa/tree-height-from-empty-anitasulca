@@ -1,46 +1,48 @@
 # python3
 
 import sys
-import threading
-
-class Node:
-    def __init__(self):
-        self.children = []
-        self.height = None
 
 def compute_height(n, parents):
-    # Create nodes for each index
-    nodes = [Node() for _ in range(n)]
+    # Create an array to store the depth of each node
+    depth = [0] * n
 
-    # Build tree by linking children to parents
-    root = None
+    # Traverse the tree and compute the depth of each node
     for i in range(n):
-        parent_index = parents[i]
-        if parent_index == -1:
-            root = nodes[i]
-        else:
-            parent_node = nodes[parent_index]
-            parent_node.children.append(nodes[i])
+        # If the node has not been visited yet, compute its depth
+        if depth[i] == 0:
+            node = i
+            d = 1
+            while parents[node] != -1:
+                # If the parent node has already been visited, use its depth
+                if depth[parents[node]] != 0:
+                    d += depth[parents[node]]
+                    break
+                # Otherwise, move up to the parent node and increment the depth
+                node = parents[node]
+                d += 1
+            # Store the depth of the current node
+            depth[i] = d
 
-    # Compute the height of the tree
-    def height(node):
-        if node.height is not None:
-            return node.height
-        if not node.children:
-            node.height = 1
-        else:
-            node.height = 1 + max(height(child) for child in node.children)
-        return node.height
-
-    return height(root)
+    # Return the maximum depth as the height of the tree
+    return max(depth)
 
 def main():
+    # Read the input
     n = int(input())
     parents = list(map(int, input().split()))
-    print(compute_height(n, parents))
 
-if __name__ == '__main__':
-    main()
+    # Compute the height of the tree
+    height = compute_height(n, parents)
+
+    # Print the height
+    print(height)
+
+# Increase the recursion limit and stack size
+sys.setrecursionlimit(10**7)
+threading.stack_size(2**27)
+
+# Start the main function in a new thread
+threading.Thread(target=main).start()
 
 
 
