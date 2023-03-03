@@ -2,53 +2,41 @@
 
 import sys
 import threading
+import numpy
+
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.children = []
 
 def compute_height(n, parents):
-    # Create a list to store the depth of each node
-    depths = [-1] * n
-
-    # Find the root node
-    root = None
+    nodes = [Node(i) for i in range(n)]
+    root_index = None
     for i in range(n):
         if parents[i] == -1:
-            root = i
-            break
-
-    # Define a recursive function to calculate the depth of each node
-    def get_depth(node):
-        if depths[node] != -1:
-            return depths[node]
-
-        if parents[node] == -1:
-            depths[node] = 1
+            root_index = i
         else:
-            depths[node] = get_depth(parents[node]) + 1
+            nodes[parents[i]].children.append(nodes[i])
+    root = nodes[root_index]
+    return get_height(root)
 
-        return depths[node]
-
-    # Calculate the depth of each node
-    for i in range(n):
-        get_depth(i)
-
-    # Return the maximum depth
-    return max(depths)
+def get_height(node):
+    if len(node.children) == 0:
+        return 1
+    else:
+        child_heights = []
+        for child in node.children:
+            child_heights.append(get_height(child))
+        return 1 + max(child_heights)
 
 def main():
-    # Read input from stdin
     n = int(input())
     parents = list(map(int, input().split()))
+    print(compute_height(n, parents))
 
-    # Compute the height of the tree
-    height = compute_height(n, parents)
-
-    # Output the result
-    print(height)
-
-# In Python, the default limit on recursion depth is rather low,
-# so raise it here for this problem. Note that to take advantage
-# of bigger stack, we have to launch the computation in a new thread.
-sys.setrecursionlimit(10**7)  # max depth of recursion
-threading.stack_size(2**27)   # new thread will get stack of such size
+sys.setrecursionlimit(10**7)
+threading.stack_size(2**27)
 threading.Thread(target=main).start()
+
 
 
