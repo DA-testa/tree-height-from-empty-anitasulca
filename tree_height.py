@@ -6,6 +6,7 @@ import threading
 def compute_height(n, parents):
     # Initialize an array of lists to represent the tree
     tree = [[] for i in range(n)]
+    root = None
 
     # Create the tree
     for i in range(n):
@@ -36,3 +37,4 @@ def main():
 sys.setrecursionlimit(10**7)
 threading.stack_size(2**27)
 threading.Thread(target=main).start()
+
