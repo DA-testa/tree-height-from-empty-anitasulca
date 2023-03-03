@@ -3,12 +3,11 @@
 import sys
 import threading
 
-def compute_height(n, parents):
-    # Initialize an array of lists to represent the tree
-    tree = [[] for i in range(n)]
-    root = None
 
-    # Create the tree
+def compute_height(n, parents):
+    # Build tree data structure
+    tree = [[] for _ in range(n)]
+    root = -1
     for i in range(n):
         parent = parents[i]
         if parent == -1:
@@ -16,26 +15,34 @@ def compute_height(n, parents):
         else:
             tree[parent].append(i)
 
-    # Compute the height of the tree
-    def height(node):
+    # Traverse tree to compute height
+    def traverse(node):
         if not tree[node]:
-            return 1
-        else:
-            return 1 + max(height(child) for child in tree[node])
+            return 0
+        heights = [traverse(child) for child in tree[node]]
+        return 1 + max(heights)
 
-    return height(root)
+    return traverse(root)
+
 
 def main():
-    # Read input from user
+    # Read input
     n = int(input())
     parents = list(map(int, input().split()))
 
-    # Compute and output the height of the tree
-    print(compute_height(n, parents))
+    # Compute height of tree
+    height = compute_height(n, parents)
 
-# Increase recursion limit and stack size for larger inputs
+    # Output result
+    print(height)
+
+
+# Increase recursion limit and stack size
 sys.setrecursionlimit(10**7)
 threading.stack_size(2**27)
+
+# Start main function in a new thread
 threading.Thread(target=main).start()
+
 
 
