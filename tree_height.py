@@ -4,10 +4,6 @@ import sys
 import threading
 
 def compute_height(n, parents):
-    # Handle case where tree has only one node
-    if n == 1:
-        return 1
-
     # Build tree data structure
     tree = [[] for _ in range(n)]
     root = -1
@@ -17,17 +13,21 @@ def compute_height(n, parents):
             root = i
         else:
             tree[parent].append(i)
+    
+    # Implement memoization
+    memo = {}
 
     # Traverse tree to compute height
-    max_depth = 0
-    def traverse(node, depth):
-        nonlocal max_depth
-        max_depth = max(max_depth, depth)
-        for child in tree[node]:
-            traverse(child, depth+1)
+    def traverse(node):
+        if node in memo:
+            return memo[node]
+        if not tree[node]:
+            return 1
+        height = max(traverse(child) for child in tree[node]) + 1
+        memo[node] = height
+        return height
 
-    traverse(root, 0)
-    return max_depth + 1
+    return traverse(root)
 
 def main():
     # Read input
@@ -46,9 +46,3 @@ threading.stack_size(2**27)
 
 # Start main function in a new thread
 threading.Thread(target=main).start()
-
-
-
-
-
-
