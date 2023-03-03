@@ -4,12 +4,12 @@ import sys
 import threading
 
 def compute_depth(i, parents, depths):
-    if parents[i] == -1:
-        depths[i] = 1
-        return 1
     if depths[i] != 0:
         return depths[i]
-    depths[i] = 1 + compute_depth(parents[i], parents, depths)
+    if parents[i] == -1:
+        depths[i] = 1
+    else:
+        depths[i] = 1 + compute_depth(parents[i], parents, depths)
     return depths[i]
 
 def compute_height(n, parents):
@@ -30,3 +30,4 @@ def main():
 sys.setrecursionlimit(10**7)  # max depth of recursion
 threading.stack_size(2**27)   # new thread will get stack of such size
 threading.Thread(target=main).start()
+
