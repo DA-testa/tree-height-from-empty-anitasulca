@@ -3,51 +3,26 @@
 import sys
 import threading
 
+def compute_depth(i, parents, depths):
+    if parents[i] == -1:
+        depths[i] = 1
+        return 1
+    if depths[i] != 0:
+        return depths[i]
+    depths[i] = 1 + compute_depth(parents[i], parents, depths)
+    return depths[i]
+
 def compute_height(n, parents):
-    # Create an array to store the height of each node
-    heights = [0] * n
-
-    # Find the root node
-    root = None
+    depths = [0] * n
+    max_depth = 0
     for i in range(n):
-        if parents[i] == -1:
-            root = i
-            break
-
-    # Define a recursive function to compute the height of a node
-    def compute_height_recursive(node):
-        # Check if the height of this node has already been computed
-        if heights[node] != 0:
-            return heights[node]
-
-        # Compute the height of each child and take the maximum
-        max_height = 0
-        for i in range(n):
-            if parents[i] == node:
-                height = compute_height_recursive(i)
-                if height > max_height:
-                    max_height = height
-
-        # Update the height of this node and return it
-        heights[node] = max_height + 1
-        return heights[node]
-
-    # Compute the height of the entire tree starting at the root
-    compute_height_recursive(root)
-
-    # Return the maximum height
-    return max(heights)
+        max_depth = max(max_depth, compute_depth(i, parents, depths))
+    return max_depth
 
 def main():
-    # Read the input
     n = int(input())
     parents = list(map(int, input().split()))
-
-    # Compute the height of the tree
-    height = compute_height(n, parents)
-
-    # Output the result
-    print(height)
+    print(compute_height(n, parents))
 
 # In Python, the default limit on recursion depth is rather low,
 # so raise it here for this problem. Note that to take advantage
