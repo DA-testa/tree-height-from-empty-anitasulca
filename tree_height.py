@@ -18,7 +18,7 @@ def compute_height(n, parents):
     # Traverse tree to compute height
     def traverse(node):
         if not tree[node]:
-            return 0
+            return 1
         heights = [traverse(child) for child in tree[node]]
         return 1 + max(heights)
 
@@ -43,6 +43,7 @@ threading.stack_size(2**27)
 
 # Start main function in a new thread
 threading.Thread(target=main).start()
+
 
 
 
