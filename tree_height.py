@@ -1,40 +1,35 @@
+#python3
 import sys
-import threading
 
 def compute_height(n, parents):
-    nodes = [[] for _ in range(n)]
-    root = None
-
-    # construct tree
+    # Create a list to represent the tree
+    # Each element of the list will be a list of the indices of the children of the corresponding node
+    tree = [[] for _ in range(n)]
+    # Find the index of the root node
+    root_index = parents.index(-1)
+    # Fill in the children lists of the tree
     for i in range(n):
-        parent = parents[i]
-        if parent == -1:
-            root = i
-        else:
-            nodes[parent].append(i)
-
-    # depth-first search to compute height
-    def dfs(node):
-        if not nodes[node]:
+        if parents[i] != -1:
+            tree[parents[i]].append(i)
+    # Define a recursive function to compute the height of the tree
+    def get_height(node_index):
+        # If the node has no children, its height is 1
+        if not tree[node_index]:
             return 1
-        heights = [dfs(child) for child in nodes[node]]
-        return max(heights) + 1
-
-    return dfs(root)
+        # Otherwise, the height of the node is 1 + the maximum height of its children
+        return 1 + max(get_height(child_index) for child_index in tree[node_index])
+    # Compute the height of the tree
+    return get_height(root_index)
 
 def main():
-    # read input
+    # Read input
     n = int(input())
     parents = list(map(int, input().split()))
-
-    # compute height of tree and print result
+    # Compute and output the height of the tree
     print(compute_height(n, parents))
 
-# In Python, the default limit on recursion depth is rather low,
-# so raise it here for this problem. Note that to take advantage
-# of bigger stack, we have to launch the computation in a new thread.
-sys.setrecursionlimit(10**7)  # max depth of recursion
-threading.stack_size(2**27)   # new thread will get stack of such size
-threading.Thread(target=main).start()
-
-
+if __name__ == '__main__':
+    # In Python, the default limit on recursion depth is rather low,
+    # so raise it here for this problem.
+    sys.setrecursionlimit(10**7)
+    main()
