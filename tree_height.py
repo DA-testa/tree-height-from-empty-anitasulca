@@ -1,52 +1,38 @@
-#python3
-import sys
+# python3
 
-class Node:
-    def __init__(self, index):
-        self.index = index
-        self.children = []
-        self.parent = None
+import sys
+import threading
+import numpy
+
 
 def compute_height(n, parents):
-    # Create the nodes
-    nodes = [Node(i) for i in range(n)]
-
-    # Create the tree by adding each node to its parent's children list
-    root = None
+    # Create a list of children for each node
+    children = [[] for _ in range(n)]
     for i in range(n):
-        parent_index = parents[i]
-        if parent_index == -1:
-            root = nodes[i]
-        else:
-            parent_node = nodes[parent_index]
-            parent_node.children.append(nodes[i])
-            nodes[i].parent = parent_node
+        if parents[i] != -1:
+            children[parents[i]].append(i)
 
-    # Recursively compute the height of the tree
+    # Compute the height of the tree
     def height(node):
-        if len(node.children) == 0:
+        if not children[node]:
             return 1
-        else:
-            return 1 + max(height(child) for child in node.children)
-
+        return 1 + max(height(child) for child in children[node])
+    
+    root = parents.index(-1)
     return height(root)
 
+
 def main():
-    # Read the input
     n = int(input())
     parents = list(map(int, input().split()))
-
-    # Compute the height of the tree and print the result
     print(compute_height(n, parents))
 
-if __name__ == '__main__':
-    # Increase the recursion limit and stack size
-    sys.setrecursionlimit(10**7)
-    threading.stack_size(2**27)
 
-    # Start the main thread
-    threading.Thread(target=main).start()
-    main()
-
+# In Python, the default limit on recursion depth is rather low,
+# so raise it here for this problem. Note that to take advantage
+# of bigger stack, we have to launch the computation in a new thread.
+sys.setrecursionlimit(10**7)  # max depth of recursion
+threading.stack_size(2**27)   # new thread will get stack of such size
+threading.Thread(target=main).start()
 
 
