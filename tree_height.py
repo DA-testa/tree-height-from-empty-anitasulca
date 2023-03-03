@@ -22,13 +22,12 @@ def compute_height(n, parents):
     max_depth = 0
     def traverse(node, depth):
         nonlocal max_depth
-        if not tree[node]:
-            max_depth = max(max_depth, depth)
+        max_depth = max(max_depth, depth)
         for child in tree[node]:
             traverse(child, depth+1)
 
-    traverse(root, 1)
-    return max_depth
+    traverse(root, 0)
+    return max_depth + 1
 
 def main():
     # Read input
