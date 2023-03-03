@@ -1,6 +1,7 @@
 # python3
 
 import sys
+import threading
 
 def compute_height(n, parents):
     # construct the tree as an adjacency list
@@ -30,13 +31,13 @@ def main():
     # compute and output the height of the tree
     print(compute_height(n, parents))
 
-if __name__ == '__main__':
-    # In Python, the default limit on recursion depth is rather low,
-    # so raise it here for this problem. Note that to take advantage
-    # of bigger stack, we have to launch the computation in a new thread.
-    sys.setrecursionlimit(10**7)  # max depth of recursion
-    threading.stack_size(2**27)   # new thread will get stack of such size
-    threading.Thread(target=main).start()
+# In Python, the default limit on recursion depth is rather low,
+# so raise it here for this problem. Note that to take advantage
+# of bigger stack, we have to launch the computation in a new thread.
+sys.setrecursionlimit(10**7)  # max depth of recursion
+threading.stack_size(2**27)   # new thread will get stack of such size
+threading.Thread(target=main).start()
+
 
 
 
