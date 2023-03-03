@@ -4,13 +4,13 @@ import sys
 import threading
 
 class Node:
-    def __init__(self, index):
-        self.index = index
+    def __init__(self):
         self.children = []
+        self.height = None
 
 def compute_height(n, parents):
     # Create nodes for each index
-    nodes = [Node(i) for i in range(n)]
+    nodes = [Node() for _ in range(n)]
 
     # Build tree by linking children to parents
     root = None
@@ -24,9 +24,13 @@ def compute_height(n, parents):
 
     # Compute the height of the tree
     def height(node):
+        if node.height is not None:
+            return node.height
         if not node.children:
-            return 1
-        return 1 + max(height(child) for child in node.children)
+            node.height = 1
+        else:
+            node.height = 1 + max(height(child) for child in node.children)
+        return node.height
 
     return height(root)
 
@@ -35,12 +39,9 @@ def main():
     parents = list(map(int, input().split()))
     print(compute_height(n, parents))
 
-# In Python, the default limit on recursion depth is rather low,
-# so raise it here for this problem. Note that to take advantage
-# of bigger stack, we have to launch the computation in a new thread.
-sys.setrecursionlimit(10**7)  # max depth of recursion
-threading.stack_size(2**27)   # new thread will get stack of such size
-threading.Thread(target=main).start()
+if __name__ == '__main__':
+    main()
+
 
 
 
