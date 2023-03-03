@@ -4,45 +4,35 @@ import sys
 import threading
 
 def compute_height(n, parents):
-    # construct the tree as an adjacency list
-    tree = {}
+    # Initialize an array of lists to represent the tree
+    tree = [[] for i in range(n)]
+
+    # Create the tree
     for i in range(n):
-        if parents[i] == -1:
+        parent = parents[i]
+        if parent == -1:
             root = i
         else:
-            if parents[i] not in tree:
-                tree[parents[i]] = []
-            tree[parents[i]].append(i)
+            tree[parent].append(i)
 
-    # recursively compute the height of the tree
+    # Compute the height of the tree
     def height(node):
-        if node not in tree:
-            return 0
+        if not tree[node]:
+            return 1
         else:
-            return max([height(child) for child in tree[node]]) + 1
+            return 1 + max(height(child) for child in tree[node])
 
     return height(root)
 
 def main():
-    # read input from stdin
+    # Read input from user
     n = int(input())
     parents = list(map(int, input().split()))
 
-    # compute and output the height of the tree
+    # Compute and output the height of the tree
     print(compute_height(n, parents))
 
-# In Python, the default limit on recursion depth is rather low,
-# so raise it here for this problem. Note that to take advantage
-# of bigger stack, we have to launch the computation in a new thread.
-sys.setrecursionlimit(10**7)  # max depth of recursion
-threading.stack_size(2**27)   # new thread will get stack of such size
+# Increase recursion limit and stack size for larger inputs
+sys.setrecursionlimit(10**7)
+threading.stack_size(2**27)
 threading.Thread(target=main).start()
-
-
-
-
-
-
-
-
-
