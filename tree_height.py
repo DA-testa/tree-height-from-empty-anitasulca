@@ -1,42 +1,40 @@
-# python3
-
 import sys
 import threading
-import numpy
-
-class Node:
-    def __init__(self, value):
-        self.value = value
-        self.children = []
 
 def compute_height(n, parents):
-    nodes = [Node(i) for i in range(n)]
-    root_index = None
-    for i in range(n):
-        if parents[i] == -1:
-            root_index = i
-        else:
-            nodes[parents[i]].children.append(nodes[i])
-    root = nodes[root_index]
-    return get_height(root)
+    nodes = [[] for _ in range(n)]
+    root = None
 
-def get_height(node):
-    if len(node.children) == 0:
-        return 1
-    else:
-        child_heights = []
-        for child in node.children:
-            child_heights.append(get_height(child))
-        return 1 + max(child_heights)
+    # construct tree
+    for i in range(n):
+        parent = parents[i]
+        if parent == -1:
+            root = i
+        else:
+            nodes[parent].append(i)
+
+    # depth-first search to compute height
+    def dfs(node):
+        if not nodes[node]:
+            return 1
+        heights = [dfs(child) for child in nodes[node]]
+        return max(heights) + 1
+
+    return dfs(root)
 
 def main():
+    # read input
     n = int(input())
     parents = list(map(int, input().split()))
+
+    # compute height of tree and print result
     print(compute_height(n, parents))
 
-sys.setrecursionlimit(10**7)
-threading.stack_size(2**27)
+# In Python, the default limit on recursion depth is rather low,
+# so raise it here for this problem. Note that to take advantage
+# of bigger stack, we have to launch the computation in a new thread.
+sys.setrecursionlimit(10**7)  # max depth of recursion
+threading.stack_size(2**27)   # new thread will get stack of such size
 threading.Thread(target=main).start()
-
 
 
