@@ -4,38 +4,45 @@ import sys
 import threading
 
 
-def compute_height(n, parents):
-    nodes = [[] for _ in range(n)]
+class Node:
+    def __init__(self, index):
+        self.index = index
+        self.children = []
+
+
+def build_tree(n, parents):
+    nodes = [Node(i) for i in range(n)]
     root = None
 
     for i, parent in enumerate(parents):
         if parent == -1:
-            root = i
+            root = nodes[i]
         else:
-            nodes[parent].append(i)
+            nodes[parent].children.append(nodes[i])
+
+    return root
+
+
+def compute_height(root):
+    if not root:
+        return 0
 
     max_height = 0
-    stack = [(root, 1)]
 
-    while stack:
-        node, height = stack.pop()
-        max_height = max(max_height, height)
+    for child in root.children:
+        max_height = max(max_height, compute_height(child))
 
-        for child in nodes[node]:
-            stack.append((child, height + 1))
-
-    return max_height
+    return max_height + 1
 
 
 def main():
     text = input("Enter 'I' for input from keyboard or 'F' for input from file: ").upper()
 
-    if text[0] == "I":
+    if text == "I":
         n = int(input("Enter number of nodes: "))
-        parents_str = input("Enter parent list separated by space: ")
-        parents = list(map(int, parents_str.split()))
+        parents = list(map(int, input("Enter parent list separated by space: ").split()))
 
-    elif text[0] == "F":
+    elif text == "F":
         file_name = input("Enter file name: ").strip()
 
         if "a" in file_name.lower().split("/")[-1]:
@@ -54,7 +61,8 @@ def main():
         print("Invalid input option.")
         return
 
-    height = compute_height(n, parents)
+    root = build_tree(n, parents)
+    height = compute_height(root)
     print(height)
 
 
@@ -63,3 +71,4 @@ if __name__ == '__main__':
     threading.stack_size(2 ** 27)
     thread = threading.Thread(target=main)
     thread.start()
+
