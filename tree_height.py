@@ -3,7 +3,6 @@
 import sys
 import threading
 
-
 def compute_height(n, parents):
     tree = [[] for i in range(n)]
     root = None
@@ -13,20 +12,19 @@ def compute_height(n, parents):
         else:
             tree[parent].append(i)
 
-    stack = [(root, 0)]
-    max_height = 0
+    queue = [(root, 0)]
+    max_height = -1
 
-    while stack:
-        node, height = stack.pop()
+    while queue:
+        node, height = queue.pop(0)
         max_height = max(max_height, height)
         for child in tree[node]:
-            stack.append((child, height + 1))
+            queue.append((child, height + 1))
 
     return max_height
 
-
 def main():
-    text = input("Enter 'I' for input from keyboard or 'F' for input from file: ")
+    text = input("Enter 'I' for input from keyboard or 'F' for input from file: ").upper()
     if text[0] == "I":
         n = int(input("Enter number of nodes: "))
         parents_str = input("Enter parent list separated by space: ")
@@ -34,12 +32,12 @@ def main():
         height = compute_height(n, parents)
     elif text[0] == "F":
         file_name = input("Enter file name: ")
-        if "a" in file_name:
+        if "a" in file_name.lower():
             print("File name cannot contain letter 'a'.")
             return
         try:
             with open("folder/" + file_name, 'r') as file:
-                n = int(file.readline().strip())
+                n = int(file.readline())
                 parents_str = file.readline().strip()
                 parents = list(map(int, parents_str.split()))
                 height = compute_height(n, parents)
@@ -50,8 +48,7 @@ def main():
         print("Invalid input option.")
         return
 
-    print(height)
-
+    print(height+1)
 
 if __name__ == '__main__':
     sys.setrecursionlimit(10 ** 7)
