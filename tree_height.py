@@ -4,6 +4,9 @@ import sys
 import threading
 
 def compute_height(n, parents):
+    if n == 1:
+        return 0
+    
     tree = [[] for i in range(n)]
     root = None
     for i, parent in enumerate(parents):
@@ -12,17 +15,17 @@ def compute_height(n, parents):
         else:
             tree[parent].append(i)
 
-    queue = [root]
-    depth = [-1] * n
-    depth[root] = 0
-
-    while queue:
-        node = queue.pop(0)
+    heights = [-1] * n
+    heights[root] = 1
+    
+    stack = [root]
+    while stack:
+        node = stack.pop()
         for child in tree[node]:
-            queue.append(child)
-            depth[child] = depth[node] + 1
-
-    return max(depth)
+            heights[child] = heights[node] + 1
+            stack.append(child)
+    
+    return max(heights)
 
 def main():
     text = input("Enter 'I' for input from keyboard or 'F' for input from file: ").upper()
@@ -33,7 +36,7 @@ def main():
         height = compute_height(n, parents)
     elif text[0] == "F":
         file_name = input("Enter file name: ")
-        if "a" in file_name.lower():
+        if "a" in file_name.lower() or "a" in file_name.lower().split("/")[-1]:
             print("File name cannot contain letter 'a'.")
             return
         try:
@@ -56,6 +59,3 @@ if __name__ == '__main__':
     threading.stack_size(2 ** 27)
     thread = threading.Thread(target=main)
     thread.start()
-
-
-
