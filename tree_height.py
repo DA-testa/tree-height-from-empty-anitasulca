@@ -4,45 +4,38 @@ import sys
 import threading
 
 
-class Node:
-    def __init__(self, index):
-        self.index = index
-        self.children = []
-
-
-def build_tree(n, parents):
-    nodes = [Node(i) for i in range(n)]
+def compute_height(n, parents):
+    nodes = [[] for _ in range(n)]
     root = None
 
     for i, parent in enumerate(parents):
         if parent == -1:
-            root = nodes[i]
+            root = i
         else:
-            nodes[parent].children.append(nodes[i])
-
-    return root
-
-
-def compute_height(root):
-    if not root:
-        return 0
+            nodes[parent].append(i)
 
     max_height = 0
+    stack = [(root, 1)]
 
-    for child in root.children:
-        max_height = max(max_height, compute_height(child))
+    while stack:
+        node, height = stack.pop()
+        max_height = max(max_height, height)
 
-    return max_height + 1
+        for child in nodes[node]:
+            stack.append((child, height + 1))
+
+    return max_height
 
 
 def main():
-    text = input("Enter 'I' for input from keyboard or 'F' for input from file: ").upper()
+    text = input("Enter 'I' for input from keyboard or 'F' for input from file: ")
 
-    if text == "I":
-        n = int(input("Enter number of nodes: "))
-        parents = list(map(int, input("Enter parent list separated by space: ").split()))
+    if text[0] == "I":
+        n = int(input())
+        parents_str = input()
+        parents = list(map(int, parents_str.split()))
 
-    elif text == "F":
+    elif text[0] == "F":
         file_name = input("Enter file name: ").strip()
 
         if "a" in file_name.lower().split("/")[-1]:
@@ -58,11 +51,10 @@ def main():
             return
 
     else:
-        print("Invalid input option.")
+        print("Invalid input")
         return
 
-    root = build_tree(n, parents)
-    height = compute_height(root)
+    height = compute_height(n, parents)
     print(height)
 
 
@@ -71,4 +63,5 @@ if __name__ == '__main__':
     threading.stack_size(2 ** 27)
     thread = threading.Thread(target=main)
     thread.start()
+
 
