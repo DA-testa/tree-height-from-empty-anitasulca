@@ -8,15 +8,13 @@ class Node:
         self.parent = parent
         self.children = []
 
-def compute_depth(node, depth):
+def compute_height(node):
     if not node.children:
-        return depth
-    max_depth = depth
-    for child in node.children:
-        max_depth = max(max_depth, compute_depth(child, depth+1))
-    return max_depth
+        return 1
+    heights = [compute_height(child) for child in node.children]
+    return 1 + max(heights)
 
-def compute_height(n, parents):
+def build_tree(n, parents):
     nodes = [Node() for _ in range(n)]
     root = None
     for i, parent in enumerate(parents):
@@ -25,7 +23,7 @@ def compute_height(n, parents):
         else:
             nodes[parent].children.append(nodes[i])
             nodes[i].parent = nodes[parent]
-    return compute_depth(root, 1)
+    return root
 
 def main():
     text = input("Enter 'I' for input from keyboard or 'F' for input from file: ")
@@ -42,7 +40,7 @@ def main():
             return
         try:
             with open("folder/" + file_name, 'r') as file:
-                n = int(file.readline())
+                n = int(file.readline().strip())
                 parents_str = file.readline().strip()
                 parents = list(map(int, parents_str.split()))
                 if len(parents) != n:
@@ -55,7 +53,8 @@ def main():
         print("Invalid input option.")
         return
 
-    height = compute_height(n, parents)
+    root = build_tree(n, parents)
+    height = compute_height(root)
     print(height)
 
 if __name__ == '__main__':
@@ -63,3 +62,5 @@ if __name__ == '__main__':
     threading.stack_size(2 ** 27)
     thread = threading.Thread(target=main)
     thread.start()
+
+
