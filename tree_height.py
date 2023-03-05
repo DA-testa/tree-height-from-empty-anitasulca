@@ -1,54 +1,56 @@
 # python3
- import sys
+ 
+import sys
+import threading
+import numpy as np
 
-class Node:
-    def __init__(self, value):
-        self.value = value
-        self.children = []
+def compute_height(n, parents):
+    tree = [[] for i in range(n)]
+    for i, parent in enumerate(parents):
+        if parent != -1:
+            tree[parent].append(i)
+    root = np.where(parents == -1)[0][0]
+    queue = [(root, 0)]
+    max_height = 0
 
-def build_tree(n, parents):
-    nodes = [Node(i) for i in range(n)]
-    root = None
-    for i in range(n):
-        parent_idx = parents[i]
-        if parent_idx == -1:
-            root = nodes[i]
-        else:
-            nodes[parent_idx].children.append(nodes[i])
-    return root
-
-def height(node):
-    if not node.children:
-        return 1
-    return 1 + max(height(child) for child in node.children)
+    while queue:
+        node, height = queue.pop(0)
+        max_height = max(max_height, height)
+        for child in tree[node]:
+            queue.append((child, height+1))
+    return max_height + 1
 
 def main():
-    input_type = input("Enter input type (F for file, K for keyboard): ").upper()
-    if input_type == "F":
-        filename = input("Enter filename (without the letter 'a'): ")
-        if 'a' in filename:
-            print("Invalid filename")
+    text = input("Enter 'I' for input from keyboard or 'F' for input from file: ")
+    if text[0] == "I":
+        n = int(input("Enter number of nodes: "))
+        parents_str = input("Enter parent list separated by space: ")
+        parents = np.array(list(map(int, parents_str.split())))
+        height = compute_height(n, parents)
+    elif text[0] == "F":
+        file_name = input("Enter file name: ")
+        if "a" in file_name:
+            print("File name cannot contain letter 'a'.")
             return
         try:
-            with open(f"inputs/{filename}") as f:
-                n = int(f.readline())
-                parents = list(map(int, f.readline().split()))
+            with open("folder/" + file_name, 'r') as file:
+                n = int(file.readline().strip())
+                parents_str = file.readline().strip()
+                parents = np.array(list(map(int, parents_str.split())))
+                height = compute_height(n, parents)
         except FileNotFoundError:
-            print("File not found")
+            print("File not found.")
             return
-    elif input_type == "K":
-        n = int(input("Enter number of nodes: "))
-        parents = list(map(int, input("Enter parents of nodes separated by spaces: ").split()))
     else:
-        print("Invalid input type")
+        print("Invalid input option.")
         return
+    print(height)
 
-    root = build_tree(n, parents)
-    print(height(root))
-
-sys.setrecursionlimit(10**7)
-threading.stack_size(2**27)
-threading.Thread(target=main).start()
+if __name__ == '__main__':
+    sys.setrecursionlimit(10**7)
+    threading.stack_size(2**27)
+    thread = threading.Thread(target=main)
+    thread.start()
 
 
 
