@@ -12,16 +12,17 @@ def compute_height(n, parents):
         else:
             tree[parent].append(i)
 
-    queue = [(root, 0)]
-    max_height = -1
+    queue = [root]
+    depth = [-1] * n
+    depth[root] = 0
 
     while queue:
-        node, height = queue.pop(0)
-        max_height = max(max_height, height)
+        node = queue.pop(0)
         for child in tree[node]:
-            queue.append((child, height + 1))
+            queue.append(child)
+            depth[child] = depth[node] + 1
 
-    return max_height
+    return max(depth)
 
 def main():
     text = input("Enter 'I' for input from keyboard or 'F' for input from file: ").upper()
@@ -48,15 +49,13 @@ def main():
         print("Invalid input option.")
         return
 
-    print(height+1)
+    print(height)
 
 if __name__ == '__main__':
     sys.setrecursionlimit(10 ** 7)
     threading.stack_size(2 ** 27)
     thread = threading.Thread(target=main)
     thread.start()
-
-
 
 
 
