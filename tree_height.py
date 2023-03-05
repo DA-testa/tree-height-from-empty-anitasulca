@@ -12,45 +12,38 @@ def compute_height(n, parents):
     root = np.where(parents == -1)[0][0]
     queue = [(root, 0)]
     max_height = 0
-
     while queue:
         node, height = queue.pop(0)
         max_height = max(max_height, height)
         for child in tree[node]:
-            queue.append((child, height+1))
+            queue.append((child, height + 1))
     return max_height
 
 def main():
-    text = input("Enter 'I' for input from keyboard or 'F' for input from file: ")
-    if text[0].lower() == "i":
-        n = int(input("Enter number of nodes: "))
-        parents_str = input("Enter parent list separated by space: ")
+    text = input().strip()
+    if text[0] == "I":
+        n = int(input().strip())
+        parents_str = input().strip()
         parents = np.array(list(map(int, parents_str.split())))
         height = compute_height(n, parents)
-    elif text[0].lower() == "f":
-        file_name = input("Enter file name: ")
-        if "a" in file_name.lower():
-            print("File name cannot contain letter 'a'.")
+    elif text[0] == "F":
+        file_name = input().strip()
+        if "a" in file_name:
+            print("wrong")
             return
-        try:
-            with open("folder/" + file_name, 'r') as file:
-                n = int(file.readline())
-                parents_str = file.readline().strip()
-                parents = np.array(list(map(int, parents_str.split())))
-                height = compute_height(n, parents)
-        except FileNotFoundError:
-            print("File not found.")
-            return
-    else:
-        print("Invalid input option.")
-        return
-    print(height+1)
+        with open("folder/" + file_name, 'r') as file:
+            n = int(file.readline().strip())
+            parents_str = file.readline().strip()
+            parents = np.array(list(map(int, parents_str.split())))
+            height = compute_height(n, parents)
+    print(height)
 
-if __name__ == '__main__':
-    sys.setrecursionlimit(10**7)
-    threading.stack_size(2**27)
+if __name__ == "__main__":
+    sys.setrecursionlimit(10**7)  # Increase recursion limit to avoid stack overflow errors
+    threading.stack_size(2**27)  # Increase stack size to avoid stack overflow errors
     thread = threading.Thread(target=main)
     thread.start()
+
 
 
 
