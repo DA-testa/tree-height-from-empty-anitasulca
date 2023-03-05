@@ -4,49 +4,47 @@ import sys
 import threading
 import numpy
 
-def build_tree(n, parents):
-    nodes = [[] for _ in range(n)]
+def compute_height(n, parents):
+    tree = {}
+    root = None
+    # Create tree
     for i in range(n):
-        if parents[i] == -1:
+        parent = parents[i]
+        if parent == -1:
             root = i
         else:
-            nodes[parents[i]].append(i)
-    return nodes, root
-
-def tree_height(nodes, root):
-    if not nodes[root]:
-        return 1
-    heights = [tree_height(nodes, child) for child in nodes[root]]
-    return max(heights) + 1
-
-def compute_height(n, parents):
-    nodes, root = build_tree(n, parents)
-    return tree_height(nodes, root)
+            if parent not in tree:
+                tree[parent] = []
+            tree[parent].append(i)
+    
+    def traverse(node, depth):
+        if node not in tree:
+            return depth
+        max_depth = depth
+        for child in tree[node]:
+            child_depth = traverse(child, depth+1)
+            if child_depth > max_depth:
+                max_depth = child_depth
+        return max_depth
+    
+    return traverse(root, 1)
 
 def main():
-    # get input from keyboard or file
-    input_type = input().strip()
-    if input_type == 'F':
-        filename = input().strip()
-        if 'a' in filename.lower():
-            print("Invalid filename")
-            return
-        try:
-            with open(f"inputs/{filename}") as f:
-                input_data = f.read().strip()
-        except FileNotFoundError:
-            print("File not found")
-            return
-    elif input_type == 'I':
-        input_data = input().strip()
+    # implement input form keyboard and from files
+    
+    # let user input file name to use, don't allow file names with letter a
+    # account for github input inprecision
+    file_input = input("Enter 'i' to input from keyboard or 'F' to input from file: ").strip().lower()
+    if file_input == 'f':
+        filename = input("Enter filename (without the letter 'a'): ").strip()
+        with open(filename, 'r') as f:
+            n = int(f.readline().strip())
+            parents = list(map(int, f.readline().strip().split()))
     else:
-        print("Invalid input type")
-        return
+        n = int(input("Enter the number of nodes: "))
+        parents = list(map(int, input("Enter the parents of nodes (space-separated): ").strip().split()))
     
-    # parse input
-    n, *parents = map(int, input_data.split())
-    
-    # compute and output result
+    # call the function and output it's result
     print(compute_height(n, parents))
 
 # In Python, the default limit on recursion depth is rather low,
@@ -55,6 +53,8 @@ def main():
 sys.setrecursionlimit(10**7)  # max depth of recursion
 threading.stack_size(2**27)   # new thread will get stack of such size
 threading.Thread(target=main).start()
+main()
+
 
 
 
