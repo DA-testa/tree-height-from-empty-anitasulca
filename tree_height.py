@@ -3,6 +3,7 @@
 import sys
 import threading
 
+
 def compute_height(n, parents):
     nodes = [[] for _ in range(n)]
     root = None
@@ -25,18 +26,19 @@ def compute_height(n, parents):
 
     return max_height
 
+
 def main():
     text = input("Enter 'I' for input from keyboard or 'F' for input from file: ").upper()
 
-    if text == "I":
+    if text[0] == "I":
         n = int(input("Enter number of nodes: "))
         parents_str = input("Enter parent list separated by space: ")
         parents = list(map(int, parents_str.split()))
 
-    elif text == "F":
+    elif text[0] == "F":
         file_name = input("Enter file name: ").strip()
 
-        if "a" in file_name.lower():
+        if "a" in file_name.lower().split("/")[-1]:
             print("File name cannot contain letter 'a'.")
             return
 
@@ -55,9 +57,9 @@ def main():
     height = compute_height(n, parents)
     print(height)
 
+
 if __name__ == '__main__':
     sys.setrecursionlimit(10 ** 7)
     threading.stack_size(2 ** 27)
     thread = threading.Thread(target=main)
     thread.start()
-
