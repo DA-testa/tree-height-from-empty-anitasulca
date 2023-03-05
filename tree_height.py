@@ -3,47 +3,51 @@
 import sys
 import threading
 
+class Node:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.children = []
+
+def compute_depth(node, depth):
+    if not node.children:
+        return depth
+    max_depth = depth
+    for child in node.children:
+        max_depth = max(max_depth, compute_depth(child, depth+1))
+    return max_depth
+
 def compute_height(n, parents):
-    tree = [[] for i in range(n)]
-    indices = [i for i in range(n)]
+    nodes = [Node() for _ in range(n)]
+    root = None
     for i, parent in enumerate(parents):
-        if parent != -1:
-            tree[parent].append(i)
-
-    heights = [0] * n
-    for i in indices:
-        if not tree[i]:
-            # leaf node
-            heights[i] = 1
+        if parent == -1:
+            root = nodes[i]
         else:
-            heights[i] = 1 + max(heights[j] for j in tree[i])
-
-    return max(heights)
+            nodes[parent].children.append(nodes[i])
+            nodes[i].parent = nodes[parent]
+    return compute_depth(root, 1)
 
 def main():
     text = input("Enter 'I' for input from keyboard or 'F' for input from file: ")
     if text[0] == "I":
         n = int(input("Enter number of nodes: "))
-        parents_str = input("Enter parent list separated by space: ").strip()
-        if n == 0:
-            height = 0
-        else:
-            parents = list(map(int, parents_str.split()))
-            height = compute_height(n, parents)
+        parents = list(map(int, input("Enter parent list separated by space: ").split()))
+        if len(parents) != n:
+            print("Invalid input: number of parents does not match number of nodes.")
+            return
     elif text[0] == "F":
-        file_name = input("Enter file name: ").strip()
+        file_name = input("Enter file name: ")
         if "a" in file_name:
             print("File name cannot contain letter 'a'.")
             return
         try:
             with open("folder/" + file_name, 'r') as file:
                 n = int(file.readline())
-                if n == 0:
-                    height = 0
-                else:
-                    parents_str = file.readline().strip()
-                    parents = list(map(int, parents_str.split()))
-                    height = compute_height(n, parents)
+                parents_str = file.readline().strip()
+                parents = list(map(int, parents_str.split()))
+                if len(parents) != n:
+                    print("Invalid input: number of parents does not match number of nodes.")
+                    return
         except FileNotFoundError:
             print("File not found.")
             return
@@ -51,6 +55,7 @@ def main():
         print("Invalid input option.")
         return
 
+    height = compute_height(n, parents)
     print(height)
 
 if __name__ == '__main__':
@@ -58,6 +63,3 @@ if __name__ == '__main__':
     threading.stack_size(2 ** 27)
     thread = threading.Thread(target=main)
     thread.start()
-
-
-
