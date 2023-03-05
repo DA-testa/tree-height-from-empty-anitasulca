@@ -18,7 +18,7 @@ def compute_height(n, parents):
         max_height = max(max_height, height)
         for child in tree[node]:
             queue.append((child, height+1))
-    return max_height + 1
+    return max_height
 
 def main():
     text = input("Enter 'I' for input from keyboard or 'F' for input from file: ")
@@ -29,7 +29,7 @@ def main():
         height = compute_height(n, parents)
     elif text[0] == "F":
         file_name = input("Enter file name: ")
-        if "a" in file_name:
+        if "a" in file_name.lower():
             print("File name cannot contain letter 'a'.")
             return
         try:
@@ -51,6 +51,7 @@ if __name__ == '__main__':
     threading.stack_size(2**27)
     thread = threading.Thread(target=main)
     thread.start()
+
 
 
 
